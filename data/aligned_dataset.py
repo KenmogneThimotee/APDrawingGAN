@@ -1,5 +1,4 @@
 import os.path
-import random
 import torchvision.transforms as transforms
 import torch
 from data.base_dataset import BaseDataset
@@ -8,6 +7,7 @@ from PIL import Image
 import numpy as np
 import cv2
 import csv
+import secrets
 
 def getfeats(featpath):
 	trans_points = np.empty([5,2],dtype=np.int64) 
@@ -74,8 +74,8 @@ class AlignedDataset(BaseDataset):
         B = AB.crop((w2, 0, w, h)).resize((self.opt.loadSize, self.opt.loadSize), Image.BICUBIC)
         A = transforms.ToTensor()(A)
         B = transforms.ToTensor()(B)
-        w_offset = random.randint(0, max(0, self.opt.loadSize - self.opt.fineSize - 1))
-        h_offset = random.randint(0, max(0, self.opt.loadSize - self.opt.fineSize - 1))
+        w_offset = secrets.SystemRandom().randint(0, max(0, self.opt.loadSize - self.opt.fineSize - 1))
+        h_offset = secrets.SystemRandom().randint(0, max(0, self.opt.loadSize - self.opt.fineSize - 1))
 
         A = A[:, h_offset:h_offset + self.opt.fineSize, w_offset:w_offset + self.opt.fineSize]#C,H,W
         B = B[:, h_offset:h_offset + self.opt.fineSize, w_offset:w_offset + self.opt.fineSize]
@@ -91,7 +91,7 @@ class AlignedDataset(BaseDataset):
             output_nc = self.opt.output_nc
 
         flipped = False
-        if (not self.opt.no_flip) and random.random() < 0.5:
+        if (not self.opt.no_flip) and secrets.SystemRandom().random() < 0.5:
             flipped = True
             idx = [i for i in range(A.size(2) - 1, -1, -1)]
             idx = torch.LongTensor(idx)
